@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model activity_groups {
+  id         Int          @id @default(autoincrement())
+  email      String       @db.VarChar(255)
+  title      String       @db.VarChar(255)
+  created_at DateTime     @default(now()) @db.Timestamp(0)
+  updated_at DateTime     @default(now()) @db.Timestamp(0)
+  deleted_at DateTime?    @db.Timestamp(0)
+  todo_items todo_items[]
+
+  @@map("activity-groups")
+}
+
+model todo_items {
+  id                Int             @id @default(autoincrement())
+  title             String          @db.VarChar(255)
+  is_active         Boolean
+  priority          String          @db.VarChar(255)
+  created_at        DateTime        @default(now()) @db.Timestamp(0)
+  updated_at        DateTime        @default(now()) @db.Timestamp(0)
+  deleted_at        DateTime?       @db.Timestamp(0)
+  activity_group_id Int
+  activity_groups   activity_groups @relation(fields: [activity_group_id], references: [id], onUpdate: Restrict, map: "fk_foreign_key_activity_id")
+
+  @@index([activity_group_id], map: "fk_foreign_key_activity_id")
+  @@map("todo-items")
+}
