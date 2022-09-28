@@ -1,5 +1,5 @@
 export class CreateActivityDto {
-    email : string;
     title : string;
+    email : string;
 
 }

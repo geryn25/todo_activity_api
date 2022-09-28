@@ -6,7 +6,7 @@ import { ActivityModule } from './activity/activity.module';
 import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [TodoModule, ActivityModule],
+  imports: [ActivityModule,TodoModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

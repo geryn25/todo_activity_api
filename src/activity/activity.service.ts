@@ -9,16 +9,20 @@ import { Activity } from './entities/activity.entity';
 export class ActivityService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createActivityDto: Prisma.activity_groupsCreateInput) {
-    const data = await this.prisma.activity_groups.create({
-      data: createActivityDto,
-    });
-    delete data.deleted_at;
-    return data;
+  async create(createActivityDto: Prisma.activitiesCreateInput) {
+    try {
+      const data = await this.prisma.activities.create({
+        data: createActivityDto,
+      });
+      delete data.deleted_at;
+      return data;
+    } catch(error) {
+      throw new HttpException('gagal menambahkan activity',400);
+    }
   }
 
   async findAll() {
-    const data = await this.prisma.activity_groups.findMany({
+    const data = await this.prisma.activities.findMany({
       select: { id: true, title: true, created_at: true },
       where: { deleted_at: null },
     });
@@ -27,9 +31,9 @@ export class ActivityService {
 
   async findOne(id: number) {
     try {
-      const data = await this.prisma.activity_groups.findFirst({
+      const data = await this.prisma.activities.findFirst({
         where: { id, deleted_at: null },
-        include: { todo_items: true },
+        include: { todos: true },
       });
       if (data) {
         return data;
@@ -42,13 +46,13 @@ export class ActivityService {
 
   async update(
     id: number,
-    updateActivityDto: Prisma.activity_groupsUpdateInput,
+    updateActivityDto: Prisma.activitiesUpdateInput,
   ) {
     updateActivityDto.updated_at = new Date();
     try {
-      const data = await this.prisma.activity_groups.findUnique({where : {id}});
+      const data = await this.prisma.activities.findUnique({where : {id}});
       if (data.deleted_at == null) {
-        const dataUpdate = await this.prisma.activity_groups.update({
+        const dataUpdate = await this.prisma.activities.update({
           where: { id },
           data: updateActivityDto,
         });
@@ -78,7 +82,7 @@ export class ActivityService {
 
   async remove(id: number) {
     try {
-      const data = await this.prisma.activity_groups.update({
+      const data = await this.prisma.activities.update({
         where: { id },
         data: { deleted_at: new Date() },
       });

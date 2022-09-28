@@ -9,10 +9,10 @@ import { Todo } from './entities/todo.entity';
 export class TodoService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createTodoDto: Prisma.todo_itemsUncheckedCreateInput) {
+  async create(createTodoDto: Prisma.todosUncheckedCreateInput) {
     createTodoDto.is_active = true;
     createTodoDto.priority = 'very-high';
-    const todo = await this.prismaService.todo_items.create({
+    const todo = await this.prismaService.todos.create({
       data: createTodoDto,
     });
     delete todo.deleted_at;
@@ -20,7 +20,7 @@ export class TodoService {
   }
 
   async findAll() {
-    const data = await this.prismaService.todo_items.findMany({
+    const data = await this.prismaService.todos.findMany({
       select: {
         id: true,
         title: true,
@@ -34,17 +34,17 @@ export class TodoService {
   }
 
   async findOne(id: number) {
-    const data = await this.prismaService.todo_items.findFirst({
+    const data = await this.prismaService.todos.findFirst({
       where: { id, deleted_at: null },
     });
     delete data.deleted_at;
     return data;
   }
 
-  async update(id: number, updateActivityDto: Prisma.todo_itemsUpdateInput) {
+  async update(id: number, updateActivityDto: Prisma.todosUpdateInput) {
     updateActivityDto.updated_at = new Date();
     try {
-      const data = await this.prismaService.todo_items.update({
+      const data = await this.prismaService.todos.update({
         where: { id },
         data: updateActivityDto,
       });
@@ -62,7 +62,7 @@ export class TodoService {
   }
 
   async remove(id: number) {
-    const data = await this.prismaService.todo_items.update({
+    const data = await this.prismaService.todos.update({
       where: { id },
       data: { deleted_at: new Date() },
     });
